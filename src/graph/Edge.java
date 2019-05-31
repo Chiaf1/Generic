@@ -1,7 +1,6 @@
 package graph;
 
-
-public class Edge {
+public class Edge implements Comparable<Edge> {
 
 	private Node startNode;
 	private Node endNode;
@@ -29,7 +28,8 @@ public class Edge {
 	public int getWeight() {
 		return weight;
 	}
-		
+	
+	@Override
 	public int compareTo(Edge e1) {
 			return Integer.compare(this.getWeight(), e1.getWeight());
 	}
