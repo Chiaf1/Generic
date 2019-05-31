@@ -1,6 +1,7 @@
 package graph;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 public class Graph {
@@ -14,18 +15,9 @@ public class Graph {
 			this.nodes.add(new Node(i));
 		}
 	}
-	
+
 	public List<Node> getNodes() {
 		return nodes;
-	}
-	
-	public Node getNodeByLabel(int label) {
-		for (Node n: nodes) {
-			if (n.getLabel() == label) {
-				return n;
-			}
-		}
-		return null;
 	}
 
 	public List<Edge> getEdges() {
@@ -49,6 +41,10 @@ public class Graph {
 			edge.getStartNode().addEdge(edge);
 			edge.getEndNode().addEdge(edge);
 			edges.add(edge);
+			nodes.get(from).addEdge(edge);
+			nodes.get(from).setLinkedNodes(nodes.get(to));
+			nodes.get(to).addEdge(edge);
+			nodes.get(to).setLinkedNodes(nodes.get(from));
 		}
 	}
 
@@ -63,41 +59,72 @@ public class Graph {
 			edge.getStartNode().setLinkedNodes(edge.getEndNode());
 			edge.getStartNode().addEdge(edge);
 			edges.add(edge);
+			nodes.get(from).addEdge(edge);
+			nodes.get(from).setLinkedNodes(nodes.get(to));
 		}
 	}
-	
+
 	public Dijkstra dijkstra(int from, int to) {
 		Dijkstra dk = new Dijkstra();
-		if (getNodeByLabel(from) == null || getNodeByLabel(to) == null) {
+		if (!(from != to && (from < nodes.size() && from >= 0) && (to < nodes.size() && to >= 0))) {
 			return null;
 		}
-		//riempio l'insieme toDo con tutti i nodi del grafo ed
-		//inizializzo la distanza dall'origine ad infinito e
-		//il nodo precendente a null
+		// riempio l'insieme toDo con tutti i nodi del grafo ed
+		// inizializzo la distanza dall'origine ad infinito e
+		// il nodo precendente a null
 		for (int i = 0; i < this.nodes.size(); i++) {
 			dk.addDist0(Double.POSITIVE_INFINITY);
 			dk.addPrev(null);
 			dk.addNodeToDo(i);
 		}
-		//setUp primo nodo
-		int indAttNode = nodes.indexOf(getNodeByLabel(from));
-		dk.setDist0(indAttNode, 0.0);
-		dk.setPrev(indAttNode, indAttNode);
-		
-		while(dk.getToDo().size()!=0) {
-			indAttNode = dk.getMinDist0();
+		// setUp primo nodo
+		dk.setDist0(from, 0.0);
+		dk.setPrev(from, from);
+
+		// continuo a scorrere la lista toDo finchè non la finisco
+		while (dk.getToDo().size() != 0) {
+			// dichiaro indAttNode con l'indice del nodo con distanza minima da 0 presente
+			// nella lista toDo
+			int indAttNode = dk.getMinDist0();
 			Node attNode = nodes.get(indAttNode);
-			for (Node n : attNode.getLinkedNodes()) {
-				double totDist = dk.getDist0(indAttNode) + 
+			// per ogni nodo adiacente al nodo sotto studio calcolo la distanza minima
+			// passando dal nodo sotto esame se è inferiore alla distanza già presente la
+			// sostituisco
+			for (Iterator<Edge> iter = attNode.getLinks().iterator(); iter.hasNext();) {
+				Edge e = iter.next();
+				double calcDist = dk.getDist0(indAttNode) + e.getWeight();
+				int indexE = e.getEndNode().getLabel();
+				if (calcDist < dk.getDist0(indexE)) {
+					dk.setDist0(indexE, calcDist);
+					dk.setPrev(indexE, indAttNode);
+				}
 			}
-			
+			// rimuovo dalla lista toDo l'indice del nodo appena studiato
 			dk.removeFromToDo(indAttNode);
 		}
+
+		// calcolo strada partendo dal nodo d'arrivo andando a ritroso seguendo i nodi
+		// precedenti appena calcolati
+		ArrayList<Node> app = new ArrayList<>();
+		ArrayList<Node> route = new ArrayList<>();
+		app.add(nodes.get(to));
+		int indAttNode = nodes.get(to).getLabel();
+		//finchè il nodo precedente non è uguale al nodo attuale continuo a ciclare
+		while (dk.getPrev(indAttNode) != indAttNode) {
+			app.add(nodes.get(dk.getPrev(indAttNode)));
+			indAttNode = dk.getPrev(indAttNode);
+		}
+		//inverto la strada in modo da averla ordinata da from a to
+		for (int i = 0; i < app.size(); i++) {
+			route.add(app.get(i));
+		}
+		dk.setRoute(route);
+
 		return dk;
 	}
-	
-	public void aStar(){
-		
+
+	public void aStar() {
+
 	}
 
 	public void print() {

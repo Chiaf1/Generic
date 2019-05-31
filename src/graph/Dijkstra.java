@@ -1,6 +1,7 @@
 package graph;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 
 public class Dijkstra {
 	private ArrayList<Double> dist0 = new ArrayList<>();
@@ -18,6 +19,10 @@ public class Dijkstra {
 
 	public ArrayList<Integer> getPrev() {
 		return prev;
+	}
+	
+	public Integer getPrev(int i) {
+		return prev.get(i);
 	}
 
 	public ArrayList<Integer> getToDo() {
@@ -50,16 +55,17 @@ public class Dijkstra {
 	
 	public int getMinDist0() {
 		Double lower = Double.POSITIVE_INFINITY;
-		for(Double d : dist0) {
-			if(lower.compareTo(d)==-1) {
+		for (Iterator<Integer> iter = toDo.iterator(); iter.hasNext();) {
+			Double d = dist0.get(toDo.get(iter.next()));
+			if (lower.compareTo(d)==-1) {
 				lower = d;
 			}
 		}
 		return dist0.indexOf(lower);
 	}
 	
-	public void setRoute() {
-		
+	public void setRoute(ArrayList<Node> route) {
+		this.route=route;
 	}
 	
 	public ArrayList<Node> getRoute(){
