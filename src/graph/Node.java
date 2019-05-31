@@ -13,6 +13,7 @@ public class Node {
 		this.label = label;
 	}
 	
+	@Override
 	public String toString() {
 		StringBuffer str = new StringBuffer("\nNodo: " + " " + label + " ");
 		for (Edge e : links) {

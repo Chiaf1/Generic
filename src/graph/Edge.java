@@ -12,6 +12,7 @@ public class Edge implements Comparable<Edge> {
 		weight = _weight;
 	}
 	
+	@Override
 	public String toString() {
 		return String.format(startNode.getLabel() + " - " + endNode.getLabel() + " = " + weight);
 	}
