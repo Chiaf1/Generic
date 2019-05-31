@@ -4,13 +4,22 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class Node {
+public class Node implements Comparable<Node> {
 	private List<Edge> links = new ArrayList<>();
 	private List<Node> linkedNodes = new ArrayList<>();
-	int label;
+	private int label;
 	
 	public Node(int label) {
 		this.label = label;
+	}
+	
+	@Override
+	public int compareTo(Node o) {
+		if (this.label==o.getLabel()) {
+			return 0;
+		}else {
+			return 1;
+		}
 	}
 	
 	@Override
@@ -33,7 +42,11 @@ public class Node {
 	public List<Node> getLinkedNodes() {
 		return linkedNodes;
 	}
-
+	
+	public List<Edge> getLinks() {
+		return links;
+	}
+	
 	public void setLinkedNodes(Node _linkedNode) {
 		this.linkedNodes.add(_linkedNode);
 	}
@@ -42,5 +55,5 @@ public class Node {
 	public void addEdge(Edge newEdge) {
 		links.add(newEdge);
 	}
-	
+
 }
